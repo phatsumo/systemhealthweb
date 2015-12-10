@@ -4,11 +4,11 @@
 
 </head>
 <body>
-<h2>System Health</h2>
+<h1>System Health</h1>
 <div id="result"></div>
 <script>
 $(document).ready(function(){
-	var url = 'ws://' + window.location.host + port + window.location.pathname + 'shwebsocket';
+	var url = 'ws://localhost:8080/systemhealthweb/shwebsocket'	
 	var ws = new WebSocket(url);
 	ws.onconnect = function(e) {
 	  console.log("connected");
@@ -21,10 +21,44 @@ $(document).ready(function(){
 	     console.log(event);
 	};
 	ws.onmessage = function(message) {
-		<!-- TODO, need to translate JSON to HTML for presentation -->
-	  document.getElementById("result").innerHTML = message.data;
+	
+		translate(message.data);
 	};
 });
+
+/**
+ * Render JSON response as HTML
+ */
+function translate(response){
+	var statArray = JSON.parse(response);
+	var i, j;
+	var out = " ";
+
+	for(i = 0; i < statArray.length; i++){
+		
+	    out += "<h2>" + statArray[i].serverName + "</h2><br/><p>";
+	    out += "Percent CPU Usage (%) = " + statArray[i].percentCPUUsage + "<br/>";
+	    out += "Server up time (days) = " + statArray[i].serverUpTimeDays + "<br/>";
+	    out += "Percent memory free (%) = " + statArray[i].percentMemFree + "<br/>";
+
+	    //loop thru each disk (hard drive)
+	    if(statArray[i].disks.length > 0) {
+		    out += "<table><tr><th>Device ID</th><th>Total Size(KB)</th><th>Free Disk Space(KB)</th><th>Percent Disk Free (%)</th></tr>";
+		    
+		    for(j = 0; j < statArray[i].disks.length; j++){
+		    	  out += "<tr> <td>" + statArray[i].disks[j].deviceID + "</td>";
+		    	  out += "<td>" + statArray[i].disks[j].totalSizeKB + "</td>";
+		    	  out += "<td>" + statArray[i].disks[j].freeSizeKB + "</td>";
+		    	  out += "<td>" + statArray[i].disks[j].percentDiskFree + "</td></tr>";
+			}
+		    out += "</table>";
+	    }
+
+	    out += "<br/><br/></p>";
+	}
+	document.getElementById("result").innerHTML = out;
+	
+}
 </script>
 </body>
 </html>
