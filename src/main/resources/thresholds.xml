@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<serverThresholdConfigData>
+    <serverThreshold>
+        <serverName>AURD-AI168889</serverName>
+        <diskThreshold deviceId="C:" diskPercentFreeWarningLevel="10.0" diskPercentFreeCriticalLevel="5.0"/>
+        <diskThreshold deviceId="G:" diskPercentFreeWarningLevel="10.0" diskPercentFreeCriticalLevel="5.0"/>
+        <warningCPUUsagePercent>80.0</warningCPUUsagePercent>
+        <criticalCPUUsagePercent>95.0</criticalCPUUsagePercent>
+        <warningMemFreePercent>10.0</warningMemFreePercent>
+        <criticalMemFreePercent>5.0</criticalMemFreePercent>
+    </serverThreshold>
+    <serverThreshold>
+        <serverName>phatxps</serverName>
+        <diskThreshold deviceId="/mnt/smbshares/dual-phat_storage2" diskPercentFreeWarningLevel="40.0" diskPercentFreeCriticalLevel="5.0"/>
+        <diskThreshold deviceId="/home" diskPercentFreeWarningLevel="80.0" diskPercentFreeCriticalLevel="75.0"/>
+        <warningCPUUsagePercent>80.0</warningCPUUsagePercent>
+        <criticalCPUUsagePercent>95.0</criticalCPUUsagePercent>
+        <warningMemFreePercent>10.0</warningMemFreePercent>
+        <criticalMemFreePercent>5.0</criticalMemFreePercent>
+    </serverThreshold>
+</serverThresholdConfigData>
