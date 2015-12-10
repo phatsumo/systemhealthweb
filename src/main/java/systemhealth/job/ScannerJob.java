@@ -10,6 +10,8 @@ import java.nio.file.DirectoryStream.Filter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
@@ -82,26 +84,18 @@ public class ScannerJob implements Job {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
      */
     @Override
     public void execute(JobExecutionContext jec) throws JobExecutionException {
-
-        // // get handle to websocket client
-        // websocketClient = (SystemHealthWebSocketClientEndPoint) jec
-        // .getMergedJobDataMap().get("websocketClient");
-        // if (websocketClient == null) {
-        // websocketClient = new SystemHealthWebSocketClientEndPoint();
-        //
-        // jec.getMergedJobDataMap().put("websocketClient", websocketClient);
-        // }
-
         LOGGER.debug("executing scanner job...");
         // 1. get list of files to process.
         DirectoryStream<Path> ds = scan(directoryToScan);
 
         // 2. foreach $file in list of files: parse and do something
+        List<ServerHealthStat> stats = new ArrayList<ServerHealthStat>();
+
         for (Path p : ds) {
             File fileToProcess = p.toFile();
             LOGGER.info("File to process: " + fileToProcess.getAbsolutePath());
@@ -109,30 +103,34 @@ public class ScannerJob implements Job {
             ServerHealthStat serverHealthStat = JSONHelper
                     .toServerHealthStat(fileToProcess);
 
+            stats.add(serverHealthStat);
+
             // create system healh analyzer
             SystemHealthAnalyzer shAnalyzer = new SystemHealthAnalyzer(
                     serverHealthStat, thresholdConfigData.copy());
-            String serverHealthStatJSONString = "";
-
-            try {
-                serverHealthStatJSONString = JSONHelper
-                        .toJSON(serverHealthStat);
-                LOGGER.info("ServerHealthStat: \n" + serverHealthStatJSONString);
-
-            } catch (JsonProcessingException e) {
-                LOGGER.error("Failed to serialize JSON object.", e);
-            }
-
-            // send to web socket server
-            if (websocketClient != null) {
-                websocketClient.sendMessage(serverHealthStatJSONString);
-            } else {
-                LOGGER.warn("Web socket client is null!!!!");
-            }
 
             // execute job on thread pool
             SystemHealthMgr.getInstance().submitJob(shAnalyzer);
 
+        }
+
+        // send update to websocket
+        if (!stats.isEmpty()) {
+            try {
+                String serverHealthStatJSONString = JSONHelper.toJSON(stats);
+                LOGGER.debug("ServerHealthStat: \n"
+                        + serverHealthStatJSONString);
+
+                // send to web socket server
+                if (websocketClient != null) {
+                    websocketClient.sendMessage(serverHealthStatJSONString);
+                } else {
+                    LOGGER.warn("Web socket client is null!!!!");
+                }
+
+            } catch (JsonProcessingException e) {
+                LOGGER.error("Failed to serialize JSON object.", e);
+            }
         }
 
     }
@@ -148,15 +146,15 @@ public class ScannerJob implements Job {
             ds = Files.newDirectoryStream(Paths.get(directory),
                     new Filter<Path>() {
 
-                @Override
-                public boolean accept(Path arg0) throws IOException {
-                    LOGGER.debug("Path = " + arg0.toString());
-                    // accept if file ends with the correct file
-                    // extension
-                    return arg0.toString().endsWith(
-                            fileExtensionToFilter);
-                }
-            });
+                        @Override
+                        public boolean accept(Path arg0) throws IOException {
+                            LOGGER.debug("Path = " + arg0.toString());
+                            // accept if file ends with the correct file
+                            // extension
+                            return arg0.toString().endsWith(
+                                    fileExtensionToFilter);
+                        }
+                    });
 
         } catch (IOException e) {
             LOGGER.error("Failed to scan directory, " + directory);

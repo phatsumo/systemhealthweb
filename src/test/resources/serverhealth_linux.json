@@ -1,0 +1,14 @@
+{
+	"serverName": "phatxps",
+	"disks": [
+		{"deviceID": "/", "totalSizeKB": 51475068, "freeSizeKB": 33284348, "percentDiskFree": 64.66},
+		{"deviceID": "/boot", "totalSizeKB": 487652, "freeSizeKB": 302378, "percentDiskFree": 62.01},
+		{"deviceID": "/home", "totalSizeKB": 1858479088, "freeSizeKB": 1304123476, "percentDiskFree": 70.17},
+		{"deviceID": "/mnt/smbshares/dual-phat_storage", "totalSizeKB": 231226424, "freeSizeKB": 167158600, "percentDiskFree": 72.29},
+		{"deviceID": "/mnt/smbshares/dual-phat_storage2", "totalSizeKB": 288451232, "freeSizeKB": 110966140, "percentDiskFree": 38.47},
+		{"deviceID": "/mnt/smbshares/dual-phat_phat", "totalSizeKB": 231226424, "freeSizeKB": 167158600, "percentDiskFree": 72.29}
+	],
+	"serverUpTimeDays": 3.99,
+	"percentCPUUsage": 6.70,
+	"percentMemFree": 82.51
+}

@@ -1,0 +1,30 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+</head>
+<body>
+<h2>System Health</h2>
+<div id="result"></div>
+<script>
+$(document).ready(function(){
+	var url = 'ws://' + window.location.host + port + window.location.pathname + 'shwebsocket';
+	var ws = new WebSocket(url);
+	ws.onconnect = function(e) {
+	  console.log("connected");
+	}
+	ws.onerror = function (error) {
+	  console.log('WebSocket Error ' + error);
+	};
+	ws.onclose = function(event){
+	     console.log("Remote host closed or refused WebSocket connection");
+	     console.log(event);
+	};
+	ws.onmessage = function(message) {
+		<!-- TODO, need to translate JSON to HTML for presentation -->
+	  document.getElementById("result").innerHTML = message.data;
+	};
+});
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@ package systemhealth.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class JSONHelper {
 
             stat = objectMapper.readValue(jsonFile,
                     new TypeReference<ServerHealthStat>() {
-                    });
+            });
 
             // keep the commented out section below, it illustrates an alternate
             // way for deserializing the json file to java object.
@@ -73,19 +74,19 @@ public class JSONHelper {
 
     /**
      * Method serializes the {@link ServerHealthStat} to JSON format.
-     * 
+     *
      * @param stat
      *            the ServerHealthStat
      * @return JSON representation of ServerHealthStat
      * @throws JsonProcessingException
      */
-    public static String toJSON(ServerHealthStat stat)
+    public static String toJSON(List<ServerHealthStat> stats)
             throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         ObjectWriter writer = objectMapper.writer();
         String valueAsString = writer.with(SerializationFeature.INDENT_OUTPUT)
-                .writeValueAsString(stat);
+                .writeValueAsString(stats);
 
         return valueAsString;
 
