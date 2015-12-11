@@ -1,5 +1,8 @@
+<!DOCTYPE html>
 <html>
 <head>
+
+<link rel="stylesheet" href="resources/css/styles.css" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
 </head>
@@ -8,23 +11,39 @@
 <div id="result"></div>
 <script>
 $(document).ready(function(){
-	var url = 'ws://localhost:8080/systemhealthweb/shwebsocket'	
+	var host = window.location.host;
+
+	var ctx = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
+ 
+	var url = 'ws://' + host + ctx + '/shwebsocket';
+
+	log('url is ' + url);
+	//var url = 'ws://localhost:8080/systemhealthweb/shwebsocket';	
 	var ws = new WebSocket(url);
 	ws.onconnect = function(e) {
-	  console.log("connected");
+	  log("connected to " + url);
 	}
 	ws.onerror = function (error) {
-	  console.log('WebSocket Error ' + error);
+	  log('WebSocket Error ' + error);
 	};
 	ws.onclose = function(event){
-	     console.log("Remote host closed or refused WebSocket connection");
-	     console.log(event);
+	     log("Remote host closed or refused WebSocket connection");
+	     log(event);
 	};
 	ws.onmessage = function(message) {
 	
 		translate(message.data);
 	};
 });
+
+function log(message){
+	if (window.console){
+		// Add console commands here.
+		window.console.log(message);
+	} else {
+	    alert(message);
+	}
+}
 
 /**
  * Render JSON response as HTML
@@ -35,12 +54,17 @@ function translate(response){
 	var out = " ";
 
 	for(i = 0; i < statArray.length; i++){
-		
-	    out += "<h2>" + statArray[i].serverName + "</h2><br/><p>";
-	    out += "Percent CPU Usage (%) = " + statArray[i].percentCPUUsage + "<br/>";
-	    out += "Server up time (days) = " + statArray[i].serverUpTimeDays + "<br/>";
-	    out += "Percent memory free (%) = " + statArray[i].percentMemFree + "<br/>";
-
+		out += "<hr>"
+	    out += "<h3>Host: " + statArray[i].serverName + "</h3>";
+	    out += "<p>";
+	    out += "<table>";
+	    out += "<tr><td>Percent CPU Usage (%)</td><td>"+ statArray[i].percentCPUUsage + "</td></tr>";
+	    out += "<tr><td>Server up time (days)</td><td>" + statArray[i].serverUpTimeDays + "</td></tr>";
+	    out += "<tr><td>Percent memory free (%)</td><td>" + statArray[i].percentMemFree + "</td></tr>";
+	    out += "</table>";
+		out += "</p>";
+	    
+	    out +="<p>";
 	    //loop thru each disk (hard drive)
 	    if(statArray[i].disks.length > 0) {
 		    out += "<table><tr><th>Device ID</th><th>Total Size(KB)</th><th>Free Disk Space(KB)</th><th>Percent Disk Free (%)</th></tr>";
@@ -54,7 +78,7 @@ function translate(response){
 		    out += "</table>";
 	    }
 
-	    out += "<br/><br/></p>";
+	    out += "</p>";
 	}
 	document.getElementById("result").innerHTML = out;
 	
