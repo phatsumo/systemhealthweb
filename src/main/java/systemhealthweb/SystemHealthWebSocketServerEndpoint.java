@@ -31,14 +31,24 @@ public class SystemHealthWebSocketServerEndpoint {
     private static Set<Session> clients = Collections
             .synchronizedSet(new HashSet<>());
 
+    private static String lastMessage;
+
     /**
      * @param session
      */
     @OnOpen
     public void onOpen(Session session) {
         LOGGER.info("New websocket session opened: " + session.getId());
-        clients.add(session);
 
+        // new connections should receive what was last received by websocket
+        // server
+        if (lastMessage != null && !lastMessage.isEmpty()) {
+            LOGGER.info("onOpen().  Sending last message.");
+            session.getAsyncRemote().sendText(getLastMessage());
+        } else {
+            LOGGER.info("Current message is null or empty");
+        }
+        clients.add(session);
         LOGGER.info("Clients set size: " + clients.size());
     }
 
@@ -63,6 +73,7 @@ public class SystemHealthWebSocketServerEndpoint {
     public void onMessage(String message, Session client) throws IOException {
 
         LOGGER.info("Websocket server received message: " + message);
+        setLastMessage(message);
 
         // broadcast the message to all connected sessions
         notifyAllSessions(message);
@@ -84,6 +95,21 @@ public class SystemHealthWebSocketServerEndpoint {
             session.getBasicRemote().sendText(message); // synchronous send
             // session.getAsyncRemote().sendText(message);
         }
+    }
+
+    /**
+     * @return the lastMessage
+     */
+    private static synchronized String getLastMessage() {
+        return lastMessage;
+    }
+
+    /**
+     * @param lastMessage
+     *            the lastMessage to set
+     */
+    private static synchronized void setLastMessage(String lastMessage) {
+        SystemHealthWebSocketServerEndpoint.lastMessage = lastMessage;
     }
 
 }
