@@ -16,6 +16,11 @@
  */
 @CHARSET "UTF-8";
 
+h3 {
+    border-bottom: 3px solid #cc9900;
+    color: #996600;
+    font-size: 20px;
+}
 
 table, th, td {
     border: 1px solid grey;
