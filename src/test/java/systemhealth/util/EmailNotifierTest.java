@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
@@ -44,7 +43,7 @@ public class EmailNotifierTest {
     /**
      *
      */
-    @Test
+    // @Test
     public void testSendMail() {
         EmailNotifier em = new EmailNotifier();
 

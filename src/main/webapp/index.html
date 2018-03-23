@@ -11,78 +11,76 @@
 <div id="result"></div>
 <script>
 $(document).ready(function(){
-	var host = window.location.host;
+    var host = window.location.host;
 
-	var ctx = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
- 
-	var url = 'ws://' + host + ctx + '/shwebsocket';
+    var ctx = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
 
-	log('url is ' + url);
-	//var url = 'ws://localhost:8080/systemhealthweb/shwebsocket';	
-	var ws = new WebSocket(url);
-	ws.onconnect = function(e) {
-	  log("connected to " + url);
-	}
-	ws.onerror = function (error) {
-	  log('WebSocket Error ' + error);
-	};
-	ws.onclose = function(event){
-	     log("Remote host closed or refused WebSocket connection");
-	     log(event);
-	};
-	ws.onmessage = function(message) {
-	
-		translate(message.data);
-	};
+    var url = 'ws://' + host + ctx + '/shwebsocket';
+
+    log('url is ' + url);
+    //var url = 'ws://localhost:8080/systemhealthweb/shwebsocket';	
+    var ws = new WebSocket(url);
+    ws.onconnect = function(e) {
+        log("connected to " + url);
+    }
+    ws.onerror = function (error) {
+        log('WebSocket Error ' + error);
+    };
+    ws.onclose = function(event){
+        log("Remote host closed or refused WebSocket connection");
+        log(event);
+    };
+    ws.onmessage = function(message) {
+        translate(message.data);
+    };
 });
 
 function log(message){
-	if (window.console){
-		// Add console commands here.
-		window.console.log(message);
-	} 
-	//else {
-	//    alert(message);
-	//}
+    if (window.console){
+        // Add console commands here.
+        window.console.log(message);
+    } 
+    //else {
+    //    alert(message);
+    //}
 }
 
 /**
  * Render JSON response as HTML
  */
 function translate(response){
-	var statArray = JSON.parse(response);
-	var i, j;
-	var out = " ";
+    var statArray = JSON.parse(response);
+    var i, j;
+    var out = " ";
 
-	for(i = 0; i < statArray.length; i++){
-		//out += "<hr>";
-	    out += "<h3>Host: " + statArray[i].serverName + "</h3>";
-	    out += "<p>";
-	    out += "<table>";
-	    out += "<tr><td>Percent CPU Usage (%)</td><td>"+ statArray[i].percentCPUUsage + "</td></tr>";
-	    out += "<tr><td>Server up time (days)</td><td>" + statArray[i].serverUpTimeDays + "</td></tr>";
-	    out += "<tr><td>Percent memory free (%)</td><td>" + statArray[i].percentMemFree + "</td></tr>";
-	    out += "</table>";
-		out += "</p>";
-	    
-	    out +="<p>";
-	    //loop thru each disk (hard drive)
-	    if(statArray[i].disks.length > 0) {
-		    out += "<table><tr><th>Device ID</th><th>Total Size(KB)</th><th>Free Disk Space(KB)</th><th>Percent Disk Free (%)</th></tr>";
-		    
-		    for(j = 0; j < statArray[i].disks.length; j++){
-		    	  out += "<tr> <td>" + statArray[i].disks[j].deviceID + "</td>";
-		    	  out += "<td>" + statArray[i].disks[j].totalSizeKB + "</td>";
-		    	  out += "<td>" + statArray[i].disks[j].freeSizeKB + "</td>";
-		    	  out += "<td>" + statArray[i].disks[j].percentDiskFree + "</td></tr>";
-			}
-		    out += "</table>";
-	    }
+    for(i = 0; i < statArray.length; i++){
+        //out += "<hr>";
+        out += "<h3>Host: " + statArray[i].serverName + "</h3>";
+        out += "<p>";
+        out += "<table>";
+        out += "<tr><td>Percent CPU Usage (%)</td><td>"+ statArray[i].percentCPUUsage + "</td></tr>";
+        out += "<tr><td>Server up time (days)</td><td>" + statArray[i].serverUpTimeDays + "</td></tr>";
+        out += "<tr><td>Percent memory free (%)</td><td>" + statArray[i].percentMemFree + "</td></tr>";
+        out += "</table>";
+        out += "</p>";
 
-	    out += "</p>";
-	}
-	document.getElementById("result").innerHTML = out;
-	
+        out +="<p>";
+        //loop thru each disk (hard drive)
+        if(statArray[i].disks.length > 0) {
+            out += "<table><tr><th>Device ID</th><th>Total Size(KB)</th><th>Free Disk Space(KB)</th><th>Percent Disk Free (%)</th></tr>";
+
+            for(j = 0; j < statArray[i].disks.length; j++){
+                out += "<tr> <td>" + statArray[i].disks[j].deviceID + "</td>";
+                out += "<td>" + statArray[i].disks[j].totalSizeKB + "</td>";
+                out += "<td>" + statArray[i].disks[j].freeSizeKB + "</td>";
+                out += "<td>" + statArray[i].disks[j].percentDiskFree + "</td></tr>";
+            }
+            out += "</table>";
+        }
+
+        out += "</p>";
+    }
+    document.getElementById("result").innerHTML = out;
 }
 </script>
 </body>
